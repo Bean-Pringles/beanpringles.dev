@@ -113,10 +113,62 @@
 
 				});
 
-	// Poptrox.
+	// Poptrox with click tracking.
+		var clickCounts = {};
+		var currentImageUrl = null;
+		var currentCustomUrl = null;
+		
+		// Track which link is clicked before popup opens
+		$('.item.thumb a.image').on('click', function() {
+			currentImageUrl = $(this).attr('href');
+			currentCustomUrl = $(this).data('url');
+			console.log('Link clicked - Image URL:', currentImageUrl);
+			console.log('Link clicked - Custom URL:', currentCustomUrl);
+		});
+		
 		$main.poptrox({
-			onPopupOpen: function() { $body.addClass('is-poptrox-visible'); },
-			onPopupClose: function() { $body.removeClass('is-poptrox-visible'); },
+			onPopupOpen: function() { 
+				$body.addClass('is-poptrox-visible');
+				
+				// Initialize click count for this image if it doesn't exist
+				if (!clickCounts[currentImageUrl]) {
+					clickCounts[currentImageUrl] = 0;
+				}
+				
+				console.log('Popup opened for:', currentImageUrl);
+				console.log('Custom URL:', currentCustomUrl);
+				console.log('Current click count:', clickCounts[currentImageUrl]);
+				
+				// Wait for popup to be fully rendered
+				setTimeout(function() {
+					var $popup = $('.poptrox-popup');
+					
+					// Add click handler to the entire popup
+					$popup.off('click.customUrl').on('click.customUrl', function(e) {
+						// Only respond to clicks on the image area (not nav buttons)
+						if ($(e.target).is('img') || $(e.target).hasClass('poptrox-popup')) {
+							clickCounts[currentImageUrl]++;
+							console.log('Popup clicked! Count now:', clickCounts[currentImageUrl]);
+							
+							// On second click, open custom URL
+							if (clickCounts[currentImageUrl] >= 1 && currentCustomUrl) {
+								console.log('Opening URL:', currentCustomUrl);
+								e.preventDefault();
+								e.stopPropagation();
+								e.stopImmediatePropagation();
+								window.open(currentCustomUrl, '_blank');
+								clickCounts[currentImageUrl] = 0; // Reset counter
+								return false;
+							}
+						}
+					});
+					
+				}, 100);
+			},
+			onPopupClose: function() { 
+				$body.removeClass('is-poptrox-visible');
+				$('.poptrox-popup').off('click.customUrl');
+			},
 			overlayColor: '#1a1f2c',
 			overlayOpacity: 0.75,
 			popupCloserText: '',
