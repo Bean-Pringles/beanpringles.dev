@@ -25,7 +25,7 @@
 					<p>As light as a Feather<br />
 					<a href="https://github.com/Bean-Pringles/Quill">Github</a></p>
 					<ul class="actions">
-						<li><a id="download-btn" href="#" class="button primary icon solid fa-download">Download</a></li>
+						<li><a href="#" class="button primary icon solid fa-download download-btn">Download</a></li>
 						<li><a href="#one" class="button icon solid fa-chevron-down scrolly">Learn More</a></li>
 					</ul>
 				</div>
@@ -89,7 +89,7 @@
 					speed, space, or readability, Quill has all three.</p>
 				</header>
 				<ul class="actions special">
-					<li><a id="download-btn" href="#" class="button primary icon solid fa-download">Download</a></li>
+					<li><a href="#" class="button primary icon solid fa-download download-btn">Download</a></li>
 					<li><a href="#" class="button">Learn More</a></li>
 				</ul>
 			</section>
@@ -432,14 +432,12 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 			<script src="assets/js/main.js"></script>
 
 			<script>
-				// Define your download URLs
 				const downloads = {
 					windows: "https://github.com/beanindustries/quill/releases/latest/download/quill-windows-x86_64.zip",
 					linux:   "https://github.com/beanindustries/quill/releases/latest/download/quill-linux-x86_64.tar.gz",
-					mac:     "https://github.com/beanindustries/quill" // fallback for macOS
+					mac:     "https://github.com/beanindustries/quill"
 				};
 
-				// Detect user's OS
 				function detectOS() {
 					const platform = navigator.platform.toLowerCase();
 					const userAgent = navigator.userAgent.toLowerCase();
@@ -447,19 +445,18 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 					if (platform.includes("win")) return "windows";
 					if (platform.includes("linux") || platform.includes("x11")) return "linux";
 					if (platform.includes("mac") || userAgent.includes("macintosh")) return "mac";
-					return "mac"; // default fallback
+					return "mac";
 				}
 
-				// Update button href
-				const btn = document.getElementById("download-btn");
 				const os = detectOS();
-				btn.href = downloads[os];
+				const buttons = document.querySelectorAll(".download-btn");
 
-				// Optional: show tooltip on hover
-				btn.title = os === "mac" 
-					? "Go to GitHub (macOS not supported)" 
-					: "Download Quill for " + os.charAt(0).toUpperCase() + os.slice(1);
+				buttons.forEach(btn => {
+					btn.href = downloads[os];
+					btn.title = os === "mac"
+						? "Go to GitHub (macOS not supported)"
+						: "Download Quill for " + os.charAt(0).toUpperCase() + os.slice(1);
+				});
 			</script>
-
 	</body>
 </html>
