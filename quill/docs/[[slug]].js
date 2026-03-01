@@ -1,4 +1,4 @@
-const GITHUB_REPO = "Bean-Pringles/Quill";
+const GITHUB_REPO = "Bean-Pringles/quill";
 const DOCS_PATH = "docs";
 const GITHUB_API = `https://api.github.com/repos/${GITHUB_REPO}/contents/${DOCS_PATH}`;
 
@@ -84,7 +84,7 @@ function buildHtml(title, bodyHtml, slug) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-  <title>${title} — Quill Docs</title>
+  <title>${title} — quill Docs</title>
   <link rel="icon" type="image/png" href="/quill/images/favicon.png">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -194,11 +194,11 @@ function buildHtml(title, bodyHtml, slug) {
 <body>
   <div class="container">
     <nav>
-      <a href="/Quill/">Quill</a>
+      <a href="/quill/">quill</a>
       <span>/</span>
-      <a href="/Quill/search">docs</a>
+      <a href="/quill/search">docs</a>
       <span>/</span>
-      <a href="/Quill/docs/${slug}">${slug}</a>
+      <a href="/quill/docs/${slug}">${slug}</a>
     </nav>
 
     <header>
@@ -230,7 +230,7 @@ function errorPage(status, message) {
 <body><div class="wrap">
   <h1>${status}</h1>
   <p>${message}</p>
-  <a href="/Quill/search">← Browse all docs</a>
+  <a href="/quill/search">← Browse all docs</a>
 </div></body></html>`, {
     status,
     headers: { "Content-Type": "text/html;charset=UTF-8" }
@@ -240,12 +240,12 @@ function errorPage(status, message) {
 export async function onRequest(context) {
   const url = new URL(context.request.url);
 
-  // Extract slug from path: /Quill/docs/hello -> "hello"
+  // Extract slug from path: /quill/docs/hello -> "hello"
   const pathParts = url.pathname.replace(/\/$/, "").split("/");
   const slug = pathParts[pathParts.length - 1];
 
   if (!slug || slug === "docs") {
-    return Response.redirect(new URL("/Quill/search", context.request.url), 302);
+    return Response.redirect(new URL("/quill/search", context.request.url), 302);
   }
 
   // Fetch from GitHub API
@@ -254,7 +254,7 @@ export async function onRequest(context) {
   try {
     const res = await fetch(apiUrl, {
       headers: {
-        "User-Agent": "BeanPringles-QuillDocs/1.0",
+        "User-Agent": "BeanPringles-quillDocs/1.0",
         "Accept": "application/vnd.github.v3.raw", // returns raw content directly
       },
       cf: { cacheTtl: 60, cacheEverything: true } // cache for 60s at edge
