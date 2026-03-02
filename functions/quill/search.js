@@ -1,4 +1,4 @@
-const GITHUB_REPO = "Bean-Pringles/quill";
+const GITHUB_REPO = "Bean-Pringles/Quill";
 const DOCS_PATH = "docs";
 const GITHUB_API = "https://api.github.com/repos/" + GITHUB_REPO + "/contents/" + DOCS_PATH;
 const RAW_BASE = "https://raw.githubusercontent.com/" + GITHUB_REPO + "/main/" + DOCS_PATH;
@@ -10,7 +10,7 @@ export async function onRequest(context) {
   try {
     const res = await fetch(GITHUB_API, {
       headers: {
-        "User-Agent": "BeanPringles-quillDocs/1.0",
+        "User-Agent": "BeanPringles-QuillDocs/1.0",
         "Accept": "application/vnd.github.v3+json",
       },
       cf: { cacheTtl: 120, cacheEverything: true }
@@ -38,11 +38,10 @@ export async function onRequest(context) {
     ? '<div class="error-box">Could not fetch docs list: ' + fetchError + '</div>'
     : "";
 
-  // Client script uses regular strings (no backticks) to avoid nesting issues
   const clientScript = [
     "(function() {",
     "  var FILES = " + filesJson + ";",
-    '  var contentCache = {};',
+    "  var contentCache = {};",
     "  var allDocs = [];",
     "  var loadedCount = 0;",
     "",
@@ -73,10 +72,10 @@ export async function onRequest(context) {
     '      var lines = content.split("\\n").filter(function(l) {',
     '        return l.trim() && l.charAt(0) !== "#";',
     "      });",
-    "      return lines.length ? lines[0].substring(0, 120) : \"\";",
+    '      return lines.length ? lines[0].substring(0, 120) : "";',
     "    }",
     "    var idx = content.toLowerCase().indexOf(query.toLowerCase());",
-    "    if (idx === -1) return \"\";",
+    '    if (idx === -1) return "";',
     "    var start = Math.max(0, idx - 40);",
     "    var end = Math.min(content.length, idx + query.length + 80);",
     '    var excerpt = (start > 0 ? "..." : "") + content.substring(start, end) + (end < content.length ? "..." : "");',
@@ -113,7 +112,7 @@ export async function onRequest(context) {
     "      var excerpt = getExcerpt(doc.content, query);",
     '      var excerptHtml = excerpt ? \'<div class="doc-excerpt">\' + highlight(excerpt, query) + "</div>" : "";',
     '      html += "<li>"',
-    '        + \'<a class="doc-card" href="/quill/docs/\' + doc.slug + \'"">\'',
+    '        + \'<a class="doc-card" href="/quill/docs/\' + doc.slug + \'">"\'',
     '        + \'<div class="doc-name">\' + highlight(doc.title, query) + "</div>"',
     '        + \'<div class="doc-slug">/quill/docs/\' + doc.slug + "</div>"',
     "        + excerptHtml",
@@ -168,7 +167,7 @@ export async function onRequest(context) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-  <title>Search \u2014 quill Docs</title>
+  <title>Search \u2014 Quill Docs</title>
   <link rel="icon" type="image/png" href="/quill/images/favicon.png">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -246,13 +245,13 @@ export async function onRequest(context) {
 <body>
   <div class="container">
     <nav>
-      <a href="/quill/">quill</a>
+      <a href="/quill/">Quill</a>
       <span>/</span>
       <a href="/quill/search">docs</a>
     </nav>
     <header>
       <h1>Documentation</h1>
-      <p>Search across all quill docs &mdash; updates automatically from GitHub.</p>
+      <p>Search across all Quill docs &mdash; updates automatically from GitHub.</p>
     </header>
     ${errorBox}
     <input id="search" type="text" placeholder="Search docs by name or content..." autocomplete="off" spellcheck="false">
