@@ -281,7 +281,7 @@ export async function onRequest(context) {
     </nav>
     <header>
       <h1>Documentation</h1>
-      <p>Search across all Quill docs &mdash; updates automatically from GitHub.</p>
+      <p>Search across all Quill docs.</p>
     </header>
     ${errorBox}
     <input id="search" type="text" placeholder="Search docs by name or content..." autocomplete="off" spellcheck="false">
