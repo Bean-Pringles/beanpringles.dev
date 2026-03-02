@@ -1,6 +1,5 @@
 const GITHUB_REPO = "Bean-Pringles/Quill";
 const DOCS_PATH = "docs";
-const GITHUB_API = "https://api.github.com/repos/" + GITHUB_REPO + "/contents/" + DOCS_PATH;
 
 function parseMarkdown(md) {
   let html = md;
@@ -77,6 +76,24 @@ function extractTitle(md) {
   return match ? match[1].trim() : null;
 }
 
+function buildBreadcrumbs(slug) {
+  // slug might be "hello" or "guides/hello" or "guides/advanced/hello"
+  const parts = slug.split("/");
+  let crumbs = '<a href="/quill/">Quill</a><span>/</span><a href="/quill/search">docs</a>';
+  let accumulated = "";
+  for (let i = 0; i < parts.length; i++) {
+    accumulated += (i > 0 ? "/" : "") + parts[i];
+    const isLast = i === parts.length - 1;
+    crumbs += "<span>/</span>";
+    if (isLast) {
+      crumbs += '<a href="/quill/docs/' + accumulated + '">' + parts[i] + "</a>";
+    } else {
+      crumbs += '<span class="crumb-folder">' + parts[i] + "</span>";
+    }
+  }
+  return crumbs;
+}
+
 function buildHtml(title, bodyHtml, slug) {
   const year = new Date().getFullYear();
   return `<!DOCTYPE HTML>
@@ -96,10 +113,11 @@ function buildHtml(title, bodyHtml, slug) {
       overflow-x: hidden;
     }
     .container { max-width: 800px; margin: 0 auto; padding: 2rem; }
-    nav { margin-bottom: 2rem; font-size: 0.9rem; }
+    nav { margin-bottom: 2rem; font-size: 0.9rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0; }
     nav a { color: #888; text-decoration: none; border-bottom: 1px solid #333; padding-bottom: 1px; transition: color 0.2s; }
     nav a:hover { color: #fff; }
     nav span { color: #444; margin: 0 0.4rem; }
+    nav .crumb-folder { color: #666; }
     header { padding-bottom: 1.5rem; border-bottom: 1px solid #222; margin-bottom: 2rem; }
     header h1 { font-size: 2.5rem; color: #fff; word-wrap: break-word; }
     #content h1 { font-size: 2rem; margin: 1.5rem 0 0.75rem; }
@@ -130,13 +148,7 @@ function buildHtml(title, bodyHtml, slug) {
 </head>
 <body>
   <div class="container">
-    <nav>
-      <a href="/quill/">Quill</a>
-      <span>/</span>
-      <a href="/quill/search">docs</a>
-      <span>/</span>
-      <a href="/quill/docs/${slug}">${slug}</a>
-    </nav>
+    <nav>${buildBreadcrumbs(slug)}</nav>
     <header>
       <h1>${title}</h1>
     </header>
@@ -173,10 +185,14 @@ function errorPage(status, message) {
 
 export async function onRequest(context) {
   const url = new URL(context.request.url);
-  const pathParts = url.pathname.replace(/\/$/, "").split("/");
-  const slug = pathParts[pathParts.length - 1];
 
-  if (!slug || slug === "docs") {
+  // Strip leading /quill/docs/ to get the full slug including subfolders
+  // e.g. /quill/docs/guides/hello -> guides/hello
+  const slug = url.pathname
+    .replace(/^\/quill\/docs\/?/, "")
+    .replace(/\/$/, "");
+
+  if (!slug) {
     return Response.redirect(new URL("/quill/search", context.request.url), 302);
   }
 
@@ -200,7 +216,7 @@ export async function onRequest(context) {
     return errorPage(502, "Network error fetching doc.");
   }
 
-  const title = extractTitle(raw) ?? slug;
+  const title = extractTitle(raw) ?? slug.split("/").pop();
   const bodyMd = raw.replace(/^#{1}\s+.+$/m, "").trim();
   const bodyHtml = parseMarkdown(bodyMd);
 

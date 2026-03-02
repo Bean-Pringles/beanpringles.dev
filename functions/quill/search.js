@@ -1,33 +1,46 @@
 const GITHUB_REPO = "Bean-Pringles/Quill";
 const DOCS_PATH = "docs";
-const GITHUB_API = "https://api.github.com/repos/" + GITHUB_REPO + "/contents/" + DOCS_PATH;
-const RAW_BASE = "https://raw.githubusercontent.com/" + GITHUB_REPO + "/main/" + DOCS_PATH;
+const GITHUB_API = "https://api.github.com/repos/" + GITHUB_REPO + "/contents/";
+
+// Recursively fetch all .md files from a GitHub directory path
+async function fetchFiles(path) {
+  const res = await fetch(GITHUB_API + path, {
+    headers: {
+      "User-Agent": "BeanPringles-QuillDocs/1.0",
+      "Accept": "application/vnd.github.v3+json",
+    },
+    cf: { cacheTtl: 120, cacheEverything: true }
+  });
+
+  if (!res.ok) return [];
+
+  const items = await res.json();
+  let files = [];
+
+  for (const item of items) {
+    if (item.type === "file" && item.name.endsWith(".md")) {
+      files.push({
+        name: item.name,
+        // slug is path relative to docs/ e.g. "hello" or "guides/hello"
+        slug: item.path.replace(DOCS_PATH + "/", "").replace(/\.md$/, ""),
+        download_url: item.download_url,
+      });
+    } else if (item.type === "dir") {
+      // Recurse into subdirectory
+      const sub = await fetchFiles(item.path);
+      files = files.concat(sub);
+    }
+  }
+
+  return files;
+}
 
 export async function onRequest(context) {
   let files = [];
   let fetchError = null;
 
   try {
-    const res = await fetch(GITHUB_API, {
-      headers: {
-        "User-Agent": "BeanPringles-QuillDocs/1.0",
-        "Accept": "application/vnd.github.v3+json",
-      },
-      cf: { cacheTtl: 120, cacheEverything: true }
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      files = data
-        .filter(f => f.type === "file" && f.name.endsWith(".md"))
-        .map(f => ({
-          name: f.name,
-          slug: f.name.replace(/\.md$/, ""),
-          download_url: f.download_url,
-        }));
-    } else {
-      fetchError = "GitHub API returned " + res.status;
-    }
+    files = await fetchFiles(DOCS_PATH);
   } catch (e) {
     fetchError = e.message;
   }
@@ -82,6 +95,14 @@ export async function onRequest(context) {
     '    return excerpt.replace(/\\n/g, " ");',
     "  }",
     "",
+    // Folder label: "guides/hello" -> show "guides" badge
+    "  function folderBadge(slug) {",
+    '    var parts = slug.split("/");',
+    '    if (parts.length < 2) return "";',
+    "    var folder = parts.slice(0, parts.length - 1).join('/');",
+    '    return \'<span class="doc-folder">\' + escHtml(folder) + "</span>";',
+    "  }",
+    "",
     "  function renderResults(query) {",
     "    var q = query.toLowerCase();",
     "    var matches;",
@@ -113,7 +134,7 @@ export async function onRequest(context) {
     '      var excerptHtml = excerpt ? \'<div class="doc-excerpt">\' + highlight(excerpt, query) + "</div>" : "";',
     '      html += "<li>"',
     '        + \'<a class="doc-card" href="/quill/docs/\' + doc.slug + \'">"\'',
-    '        + \'<div class="doc-name">\' + highlight(doc.title, query) + "</div>"',
+    '        + \'<div class="doc-title-row">\' + \'<span class="doc-name">\' + highlight(doc.title, query) + "</span>" + folderBadge(doc.slug) + "</div>"',
     '        + \'<div class="doc-slug">/quill/docs/\' + doc.slug + "</div>"',
     "        + excerptHtml",
     '        + "</a></li>";',
@@ -139,10 +160,10 @@ export async function onRequest(context) {
     "        .then(function(text) {",
     "          contentCache[file.slug] = text;",
     "          var h1 = text.match(/^# (.+)$/m);",
-    "          allDocs.push({ slug: file.slug, title: h1 ? h1[1].trim() : file.slug, content: text });",
+    "          allDocs.push({ slug: file.slug, title: h1 ? h1[1].trim() : file.slug.split('/').pop(), content: text });",
     "        })",
     "        .catch(function() {",
-    '          allDocs.push({ slug: file.slug, title: file.slug, content: "" });',
+    "          allDocs.push({ slug: file.slug, title: file.slug.split('/').pop(), content: '' });",
     "        })",
     "        .finally(function() {",
     "          loadedCount++;",
@@ -215,9 +236,18 @@ export async function onRequest(context) {
       transition: border-color 0.15s, background 0.15s;
     }
     .doc-card:hover { border-color: #333; background: #111; }
-    .doc-card .doc-name { font-size: 1.15rem; color: #7eb8f7; margin-bottom: 0.3rem; }
-    .doc-card .doc-slug { font-size: 0.8rem; color: #555; margin-bottom: 0.5rem; }
-    .doc-card .doc-excerpt { font-size: 0.9rem; color: #777; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .doc-title-row { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.3rem; }
+    .doc-name { font-size: 1.15rem; color: #7eb8f7; }
+    .doc-folder {
+      font-size: 0.75rem;
+      color: #555;
+      background: #151515;
+      border: 1px solid #2a2a2a;
+      border-radius: 3px;
+      padding: 0.1rem 0.4rem;
+    }
+    .doc-slug { font-size: 0.8rem; color: #555; margin-bottom: 0.5rem; }
+    .doc-excerpt { font-size: 0.9rem; color: #777; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .doc-card mark { background: #2a3f5e; color: #add4ff; border-radius: 2px; padding: 0 2px; }
     .empty { color: #555; text-align: center; padding: 3rem 0; }
     .error-box {
