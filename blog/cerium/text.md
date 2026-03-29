@@ -127,6 +127,6 @@ From there I unzipped and ran it where it worked just fine. There was occasional
 
 Cerium's main goal was to be built as cheap as possible, and it acomplished that. Total with the stand was about 50 bucks. That is pretty cheap for something that looks so good. It has decent performance and draws very little power. Plus I now have a conversation starter setting on my desk. Cerium accomplishes everything I set out to do and more, and that is pretty darn cool.
 
-`Let's See What You Can Make!`
+__Let's See What You Can Make!__
 
 ![Cerium](images/cerium.jpeg)
