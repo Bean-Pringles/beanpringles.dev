@@ -1,6 +1,6 @@
 __NOTE: While I do go in depth about how I built this, this is not a build guide.__
 
-Ever since I was a kid, I have always wanted my own homelab. I didn't know what they are or how to build one, or even what they actually did, I just knew I wanted one. But, my kid self had 10 bucks and a pack of skittles, so I wasn't getting my dream anytime soon. That's why I was so excited to work on a server that younger me could actually afford.
+Ever since I was little, I have always wanted my own homelab. I didn't know what they are or how to build one, or even what they actually did, I just knew I wanted one. But, my kid self had 10 bucks and a pack of skittles, so I wasn't getting my dream anytime soon. That's why I was so excited to work on a server that younger me could actually afford.
 
 # What is Cerium
 
@@ -74,11 +74,11 @@ This script flashed the new custom ROM and BIOS and allowed the Chromebook to bo
 
 ## Installing Debian
 
-Because the Chromebook only had around 16GB of memory, I decided to go with a completely text-based Debian install. While Debian is known as a great server OS because of it's extreme stability and huge package ecosystem, I used it because of it's small size without a GUI. I went through the install like normal, making sure to install my commonly used packages and more firewalls and security measures than I usually use (ufw, fail2ban, SSH key authentication, etc). I also disabled sleep and power-saving features so it can run 24/7
+Because the Chromebook only had around 16GB of memory, I decided to go with a completely text-based Debian install. While Debian is known as a great server OS because of it's extreme stability and huge package ecosystem, I used it because of it's small size without a GUI. I went through the install like normal, making sure to install my commonly used packages and more firewalls and security measures than I usually use (ufw, fail2ban, SSH key authentication, etc). I also disabled sleep and power-saving features so it can run 24/7.
 
 ## Setting Up SSH
 
-I wanted this Chromebook to be completely headless, so I had to set up SSH. I gave the Chromebook a static IP on my router, then also set up an SSH alias, so all I had to type is `ssh chromebook1`. But, because each time I had to login, it sent my password over the open internet for verification, I set up a passphrase that I only have to sign in with once per session on my main computer. After I remove the motherboard from the shell, this will be my only way to control the machine.
+I wanted this Chromebook to be completely headless, so I had to set up SSH. I gave the Chromebook a static IP on my router, then also set up an SSH alias, so all I had to type is `ssh cerium`. But, because each time I had to login, it sent my password over the open internet for verification, I set up a passphrase that I only have to sign in with once per session on my main computer. After I remove the motherboard from the shell, this will be my only way to control the machine.
 
 ## Stripping the Chromebook
 
@@ -86,7 +86,8 @@ Because I wanted this to be small, power efficient, completely headless, and loo
 
 # Making the Stand
 
-The stand was a project in of itself, but luckily I didn't break any parts in my fits of rage.
+The stand was a project in of itself, but luckily I didn't break any parts in my fits of rage. For any of the cad, you can find it right here:
+[Download Cad](cad.zip)
 
 ## The Stand Base
 
@@ -94,7 +95,7 @@ For the base, I used an H10A hurricane tie, which I hammered the slightly folded
 
 ## The Vertical Part holders
 
-To keep the battery and motherboard standing up, I used an almost bucket like design. While the battery could touch the PLA directly, the motherboard couldn't, so I made a sock like design out of EVA foam and electrical tape for the bottom 3cm of it. This cushioned the motherboard so that if it wiggled, it wouldn't break. Unfortunately, because it wasn't ESD foam, it could cause a zap of static electricity, but because it doesn't move that often and just sits on my desk, I didn't think this was that important. I also put a hole at the bottom of the motherboard's holder so the Wi-Fi cables could get through.
+To keep the battery and motherboard standing up, I used an almost bucket like design. While the battery could touch the PLA directly, the motherboard couldn't, so I made a sock like design out of EVA foam and electrical tape for the bottom 3cm of it. This cushioned the motherboard so that if it wiggled, it wouldn't break. Unfortunately, because it wasn't ESD foam, it could cause a zap of static electricity, but because it doesn't move that often and just sits on my desk, I didn't think this was that important.(I did attempt to find ESD foam, but nobody in my town sells it so I pulled out the EVA foam in my closet) I also put a hole at the bottom of the motherboard's holder so the Wi-Fi cables could get through.
 
 ## Middle Part Hub Holder
 
@@ -124,4 +125,8 @@ From there I unzipped and ran it where it worked just fine. There was occasional
 
 # Conclusion
 
-Cerium's main goal was to be built as cheap as possible.
+Cerium's main goal was to be built as cheap as possible, and it acomplished that. Total with the stand was about 50 bucks. That is pretty cheap for something that looks so good. It has decent performance and draws very little power. Plus I now have a conversation starter setting on my desk. Cerium accomplishes everything I set out to do and more, and that is pretty darn cool.
+
+`Let's See What You Can Make!`
+
+![Cerium](images/cerium.jpeg)
