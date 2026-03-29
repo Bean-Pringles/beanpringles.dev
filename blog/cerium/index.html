@@ -65,11 +65,24 @@ footer {
     text-align: center;
 }
 
-@media (max-width: 600px) {
-    header h1 { font-size: 2rem; }
-    #two h2 { font-size: 1.5rem; }
-    #two p { font-size: 1rem; }
+#markdown-content img {
+    display: block;
+    width: 110%;
+    max-width: 110%;
+    margin: 1.5rem auto;
+    margin-left: -5%;
+    border-radius: 6px;
 }
+
+/* Tablet + phone */
+@media (max-width: 768px) {
+    #markdown-content img {
+        width: 100%;
+        max-width: 100%;
+        margin-left: 0;
+    }
+}
+
 </style>
 </head>
 
